@@ -1,0 +1,22 @@
+{ 
+  "schema": [
+    "users.sql",
+    "packages.sql"
+  ],
+  "statements": [
+    "insert_user",
+    "insert_credentialed_user",
+    "select_user_by_email",
+    "select_user_by_id",
+    "select_users",
+    "select_latest_user",
+    "update_user_registration",
+    "update_user_enabled",
+    "delete_user",
+
+    "select_all_packages",
+    "select_latest_package",
+    "insert_package",
+    "update_package_processing"
+  ]
+}

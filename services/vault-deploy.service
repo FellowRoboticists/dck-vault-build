@@ -1,0 +1,17 @@
+[Unit]
+Description=Vault Application Deploy Packager
+
+[Service]
+Environment=NODE_ENV=production
+WorkingDirectory=/var/www/vault-deploy-api
+ExecStart=/usr/bin/node ./bin/www
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=Vault
+# EnvironmentFile=/var/www/vault/shared/config/environment_variables
+User=packager
+
+[Install]
+WantedBy=multi-user.target

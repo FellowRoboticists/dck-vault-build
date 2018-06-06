@@ -1,0 +1,5 @@
+# Vim
+*.swp
+
+# NPM
+vault-deploy-api/node_modules
