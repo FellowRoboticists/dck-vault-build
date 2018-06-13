@@ -1,9 +1,9 @@
-FROM cgswong/min-jessie:latest
+FROM debian:stretch-slim
 
 RUN \
         DEBIAN_FRONTEND=noninteractive \
         && apt-get -y -q update \
-        && apt-get -y -q install curl git bzip2 sqlite3 \
+        && apt-get -y -q install curl git bzip2 gnupg sqlite3 \
         && curl -sL https://deb.nodesource.com/setup_8.x | bash - \
         && apt-get -y -q install nodejs \
 	&& npm install -g yarn @angular/cli \
