@@ -16,7 +16,9 @@
 
     "select_all_packages",
     "select_latest_package",
+    "select_package_by_id",
     "insert_package",
-    "update_package_processing"
+    "update_package_processing",
+    "delete_package_by_id"
   ]
 }

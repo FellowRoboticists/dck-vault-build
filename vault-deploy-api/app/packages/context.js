@@ -1,6 +1,10 @@
 'use strict'
 
+/* global appConfig */
+
 module.exports = (function () {
+  const path = require('path')
+  const fs = require('fs-extra')
   const { exec } = require('child_process')
   const db = require('../utility/db')
 
@@ -22,17 +26,23 @@ module.exports = (function () {
 
     // TODO: Somewhere in here, we need to invoke the
     // packaging script to build this package.
-    exec(`/usr/local/bin/deploy_prep.sh -b ${pkg.application_version} -B ${pkg.be_version} -F ${pkg.fe_version} -T ${pkg.build_timestamp}`, async (err, stdout, stderr) => {
+    exec(`/usr/local/bin/deploy-prep.sh -b ${pkg.application_version} -B ${pkg.be_version} -F ${pkg.fe_version} -T ${pkg.build_timestamp}`, async (err, stdout, stderr) => {
     // exec('sleep 60 && echo "I done it!!"', async (err, stdout, stderr) => {
-      await db.run(
-        db.statements.update_package_processing,
-        {
-          $error_message: err ? err.toString() : null,
-          $stdout: stdout,
-          $stderr: stderr,
-          $id: pkg.rowid
-        }
-      )
+      try {
+        console.log('starting to update DB...')
+        await db.run(
+          db.statements.update_package_processing,
+          {
+            $error_message: err ? err.toString() : null,
+            $stdout: stdout,
+            $stderr: stderr,
+            $id: pkg.id
+          }
+        )
+        console.log('done updating DB.')
+      } catch (err) {
+        console.error(`Error updating packages: ${err}`)
+      }
     })
 
     return pkg
@@ -42,8 +52,51 @@ module.exports = (function () {
     return db.all(db.statements.select_all_packages)
   }
 
+  const getPackageInfo = async (packageId) => {
+    return db.get(
+      db.statements.select_package_by_id,
+      {
+        $package_id: packageId
+      }
+    )
+  }
+
+  const createPackageURL = (pkg) => {
+    let tarball = `release-${pkg.application_version}-${pkg.build_timestamp}.tar.bz2`
+    return path.join(appConfig.environment.dbPath, 'packages', tarball)
+  }
+
+  const deletePackage = async (packageId) => {
+    let pkg = await db.get(
+      db.statements.select_package_by_id,
+      {
+        $package_id: packageId
+      }
+    )
+    if (pkg) {
+      await db.run(
+        db.statements.delete_package_by_id,
+        {
+          $package_id: packageId
+        }
+      )
+
+      // Delete the tarball if it exists
+      let tarballPath = createPackageURL(pkg)
+
+      if (await fs.pathExists(tarballPath)) {
+        await fs.remove(tarballPath)
+      }
+    }
+
+    return pkg
+  }
+
   var mod = {
     createPackage: createPackage,
+    createPackageURL: createPackageURL,
+    deletePackage: deletePackage,
+    getPackageInfo: getPackageInfo,
     getPackages: getPackages
   }
 
