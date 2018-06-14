@@ -1,0 +1,26 @@
+[Unit]
+Description=Vault Package Server
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+
+# The following lines start with '-' because they are
+# allowed to fail without causing startup to fail
+
+# Kill the old instance if it's still running
+ExecStartPre=-/usr/bin/docker kill %n
+# Remove the old instance
+ExecStartPre=-/usr/bin/docker rm %n
+# Pull the latest version of the image
+ExecStartPre=-/usr/bin/docker pull "naiveroboticist/vault-build"
+# Go ahead and start the service
+ExecStart=/usr/bin/docker run --rm --name %n --mount source=vault-deploy,destination=/var/lib/vault-deploy -p 3000:3000 naiveroboticist/vault-build
+
+# Stop the instance
+ExecStop=/usr/bin/docker stop %n
+
+[Install]
+WantedBy=multi-user.target
