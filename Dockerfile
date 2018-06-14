@@ -5,13 +5,13 @@ USER root
 RUN \
         DEBIAN_FRONTEND=noninteractive \
         && apt-get -y -q update \
-        && apt-get -y -q install curl git bzip2 gnupg sqlite3 \
+        && apt-get -y -q install curl git bzip2 gnupg sqlite3 build-essential \
         && curl -sL https://deb.nodesource.com/setup_8.x | bash - \
         && apt-get -y -q install nodejs \
+	&& useradd --comment "Deploy prep user" --create-home --system --shell /bin/bash packager \
 	&& npm install -g npm@latest \
 	&& npm install -g yarn \
-	&& npm install -g @angular/cli \
-	&& useradd --comment "Deploy prep user" --create-home --system --shell /bin/bash packager \
+	&& npm install -g @angular/cli@1.7.4 --unsafe-perm \
 	&& mkdir -p /var/lib/vault-deploy \
 	&& mkdir -p /var/www/vault-deploy-api \
 	&& chown packager:root /var/lib/vault-deploy \
