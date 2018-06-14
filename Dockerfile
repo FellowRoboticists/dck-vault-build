@@ -1,12 +1,16 @@
 FROM debian:stretch-slim
 
+USER root
+
 RUN \
         DEBIAN_FRONTEND=noninteractive \
         && apt-get -y -q update \
         && apt-get -y -q install curl git bzip2 gnupg sqlite3 \
         && curl -sL https://deb.nodesource.com/setup_8.x | bash - \
         && apt-get -y -q install nodejs \
-	&& npm install -g yarn @angular/cli \
+	&& npm install -g npm@latest \
+	&& npm install -g yarn \
+	&& npm install -g @angular/cli \
 	&& useradd --comment "Deploy prep user" --create-home --system --shell /bin/bash packager \
 	&& mkdir -p /var/lib/vault-deploy \
 	&& mkdir -p /var/www/vault-deploy-api \
