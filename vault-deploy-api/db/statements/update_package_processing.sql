@@ -1,5 +1,5 @@
 UPDATE packages SET
-  processed = 1,
+  processed = $processed,
   error_message = $error_message,
   stdout = $stdout,
   stderr = $stderr,

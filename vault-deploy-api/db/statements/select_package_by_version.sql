@@ -14,3 +14,5 @@ SELECT
   p.createdAt
 FROM
   packages AS p JOIN users AS u ON u.rowid = p.user_id
+WHERE
+  application_version = $version

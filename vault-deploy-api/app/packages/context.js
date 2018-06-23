@@ -26,13 +26,17 @@ module.exports = (function () {
 
     // TODO: Somewhere in here, we need to invoke the
     // packaging script to build this package.
-    exec(`/usr/local/bin/deploy-prep.sh -b ${pkg.application_version} -B ${pkg.be_version} -F ${pkg.fe_version} -T ${pkg.build_timestamp}`, async (err, stdout, stderr) => {
-    // exec('sleep 60 && echo "I done it!!"', async (err, stdout, stderr) => {
+    // exec(`/usr/local/bin/deploy-prep.sh -b ${pkg.application_version} -B ${pkg.be_version} -F ${pkg.fe_version} -T ${pkg.build_timestamp}`, async (err, stdout, stderr) => {
+    exec('sleep 60 && echo "I done it!!"', async (err, stdout, stderr) => {
       try {
         console.log('starting to update DB...')
+
+        let processed = (err) ? 2 : 1
+
         await db.run(
           db.statements.update_package_processing,
           {
+            $processed: processed,
             $error_message: err ? err.toString() : null,
             $stdout: stdout,
             $stderr: stderr,
@@ -48,8 +52,20 @@ module.exports = (function () {
     return pkg
   }
 
-  const getPackages = async () => {
-    return db.all(db.statements.select_all_packages)
+  const getPackages = async (queryParams) => {
+    let result
+    if (queryParams.applicationVersion) {
+      result = db.all(
+        db.statements.select_package_by_version,
+        {
+          $version: queryParams.applicationVersion
+        }
+      )
+    } else {
+      result = db.all(db.statements.select_all_packages)
+    }
+
+    return result
   }
 
   const getPackageInfo = async (packageId) => {

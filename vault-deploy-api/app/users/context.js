@@ -77,8 +77,12 @@ module.exports = (function () {
     return db.get(db.statements.select_user_by_id, userId)
   }
 
-  const getUsers = () => {
-    return db.all(db.statements.select_users)
+  const getUsers = (query) => {
+    if (query.email) {
+      return db.all(db.statements.select_user_by_email, query.email)
+    } else {
+      return db.all(db.statements.select_users)
+    }
   }
 
   var mod = {
