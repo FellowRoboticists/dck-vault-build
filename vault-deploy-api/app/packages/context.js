@@ -8,6 +8,18 @@ module.exports = (function () {
   const { exec } = require('child_process')
   const db = require('../utility/db')
 
+  const _buildPackagingCommand = (pkg) => {
+    let packagingCommand
+
+    if (appConfig.environment.debuggingMode === 'on') {
+      packagingCommand = 'sleep 60 && echo "I done it!!"'
+    } else {
+      packagingCommand = `/usr/local/bin/deploy-prep.sh -b ${pkg.application_version} -B ${pkg.be_version} -F ${pkg.fe_version} -T ${pkg.build_timestamp}`
+    }
+
+    return packagingCommand
+  }
+
   const createPackage = async (userId, packageParams) => {
     console.log(`Package: ${JSON.stringify(packageParams)}`)
     await db.run(
@@ -24,10 +36,9 @@ module.exports = (function () {
     // about what will be done.
     let pkg = await db.get(db.statements.select_latest_package)
 
-    // TODO: Somewhere in here, we need to invoke the
-    // packaging script to build this package.
-    // exec(`/usr/local/bin/deploy-prep.sh -b ${pkg.application_version} -B ${pkg.be_version} -F ${pkg.fe_version} -T ${pkg.build_timestamp}`, async (err, stdout, stderr) => {
-    exec('sleep 60 && echo "I done it!!"', async (err, stdout, stderr) => {
+    let packagingCommand = _buildPackagingCommand(pkg)
+
+    exec(packagingCommand, async (err, stdout, stderr) => {
       try {
         console.log('starting to update DB...')
 
