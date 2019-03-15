@@ -12,7 +12,7 @@ router.get(
   sessionMw.verifyToken,
   async function __getPackages (req, res, next) {
     try {
-      res.json(await packageCtx.getPackages())
+      res.json(await packageCtx.getPackages(req.query))
     } catch (err) {
       next(err)
     }

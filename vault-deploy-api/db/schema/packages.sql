@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS packages (
 	application_version TEXT NOT NULL,
 	be_version TEXT,
 	fe_version TEXT,
-	processed INTEGER NOT NULL DEFAULT 0 CHECK (processed IN (0, 1)),
+	processed INTEGER NOT NULL DEFAULT 0 CHECK (processed IN (0, 1, 2)),
 	error_message TEXT,
 	stdout TEXT,
 	stderr TEXT,
