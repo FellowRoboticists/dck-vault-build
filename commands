@@ -1,0 +1,12 @@
+How to start the service:
+
+sudo docker run --mount source=vault-deploy,destination=/var/lib/vault-deploy -p 3000:3000 -d vault-build
+
+Running a shell in a running instance
+
+sudo docker exec -i -t <container-name> /bin/bash
+
+Showing the logs
+
+sudo docker logs --follow <container-name>
+
